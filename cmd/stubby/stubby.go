@@ -7,23 +7,32 @@ import (
 
 	"github.com/pressly/chi"
 	"github.com/pressly/chi/middleware"
-	stubby "github.com/techspaceco/techspace-stubby"
+	stubby "github.com/shanna/stubby"
+	bjf "github.com/shanna/stubby/id/bjf"
+	store "github.com/shanna/stubby/store/sqlite"
 )
 
 // TODO: flags.
 // TODO: errors.
 
 func main() {
-	conn, err := stubby.Open("./stubby.db")
+	conn, err := store.Open("./stubby.db")
 	if err != nil {
 		panic(err) // TODO:
 	}
 	defer conn.Close()
 
+	id, err := bjf.New([]byte("hard coded secret to be replaced"))
+	if err != nil {
+		panic(err) // TODO:
+	}
+
+	shortener := stubby.New(conn, id)
+
 	router := chi.NewRouter()
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.Logger)
-	router.Mount("/s", stubby.Handler(conn))
+	router.Mount("/s", shortener.Handler())
 
 	// TODO: Bundle public css/html into binary.
 	cwd, _ := os.Getwd()
