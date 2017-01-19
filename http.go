@@ -1,6 +1,7 @@
 package stubby
 
 // TODO: JWT protect meta data and creation.
+// TODO: Eh. Redirect instead of dumping out JSON debugging.
 
 import (
 	"net/http"

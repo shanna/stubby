@@ -1,6 +1,8 @@
 package bjf
 
 import (
+	"strconv"
+
 	b "github.com/xor-gate/bjf"
 )
 
@@ -19,5 +21,5 @@ func (i ID) Encode(id string) string {
 }
 
 func (i ID) Decode(token string) string {
-	return string(b.Decode(token))
+	return strconv.Itoa(b.Decode(token))
 }

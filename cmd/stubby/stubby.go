@@ -27,12 +27,15 @@ func main() {
 		panic(err) // TODO:
 	}
 
-	shortener := stubby.New(conn, id)
+	shortener, err := stubby.New(conn, id)
+	if err != nil {
+		panic(err) // TODO:
+	}
 
 	router := chi.NewRouter()
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.Logger)
-	router.Mount("/s", shortener.Handler())
+	router.Mount("/s", stubby.Handler(shortener))
 
 	// TODO: Bundle public css/html into binary.
 	cwd, _ := os.Getwd()
