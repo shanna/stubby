@@ -52,7 +52,7 @@ func (c *Conn) Create(url string, meta stubby.Meta) (*stubby.Record, error) {
 }
 
 func (c *Conn) Get(id string) (*stubby.Record, error) {
-	c.db.Exec(`update stubby_urls set visits = visits + 1 where id = $1`, id)
+	c.db.Exec(`update stubby_urls set visits = visits + 1 where id = $1`, id) // TODO: Background?
 	row := c.db.QueryRow(`select id, url, visits from stubby_urls where id = $1`, id)
 
 	record := &stubby.Record{}
