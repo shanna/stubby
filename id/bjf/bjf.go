@@ -1,6 +1,7 @@
 package bjf
 
 import (
+	"fmt"
 	"hash/crc32"
 	"strconv"
 
@@ -18,12 +19,15 @@ func New(secret []byte) (*ID, error) {
 	return &ID{int(crc32.ChecksumIEEE(secret))}, nil
 }
 
-func (i ID) Encode(id string) string {
-	in, _ := strconv.Atoi(id)
-	return b.Encode(strconv.Itoa(i.secret ^ in))
+func (i ID) Encode(id string) (string, error) {
+	id32, err := strconv.Atoi(id)
+	if err != nil {
+		return "", fmt.Errorf("ID encode error %s", err)
+	}
+	return b.Encode(strconv.Itoa(i.secret ^ id32)), nil
 }
 
-func (i ID) Decode(token string) string {
+func (i ID) Decode(token string) (string, error) {
 	out := b.Decode(token)
-	return strconv.Itoa(i.secret ^ out)
+	return strconv.Itoa(i.secret ^ out), nil
 }

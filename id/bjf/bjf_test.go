@@ -1,12 +1,13 @@
 package bjf_test
 
 import (
+	"math"
+	"strconv"
 	"testing"
 
 	"github.com/shanna/stubby/id/bjf"
 )
 
-// TODO: Table driven. Check a bunch of valid IDs.
 var ids = []struct {
 	id, token string
 }{
@@ -14,6 +15,7 @@ var ids = []struct {
 	{"1", "ecTswn"},
 	{"65538", "ecTbtm"},
 	{"123456789", "ebqelR"},
+	{strconv.Itoa(math.MaxInt32), "c9qJA3"},
 }
 
 func TestBjf(t *testing.T) {
@@ -23,15 +25,24 @@ func TestBjf(t *testing.T) {
 		return
 	}
 
-	for _, id := range ids {
-		token := f.Encode(id.id)
-		if token != id.token {
-			t.Errorf("Expected token '%s' but got '%s'", id.token, token)
+	for _, test := range ids {
+		token, err := f.Encode(test.id)
+		if err != nil {
+			t.Errorf("Expected no error on encode but got '%s'", err)
+			return
+		}
+		if token != test.token {
+			t.Errorf("Expected token '%s' but got '%s'", test.token, token)
 			return
 		}
 
-		if f.Decode(token) != id.id {
-			t.Errorf("Encode -> Decode bijective function failure.")
+		id, err := f.Decode(token)
+		if err != nil {
+			t.Errorf("Expected no error on decode but got '%s'", err)
+			return
+		}
+		if id != test.id {
+			t.Errorf("Expected bijective rount trip '%s' but got '%s'", test.id, id)
 			return
 		}
 	}
